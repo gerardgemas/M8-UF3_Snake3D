@@ -21,10 +21,12 @@ public class SnakeController : MonoBehaviour
     private Dictionary<GameObject, float> bodyCreationTimes = new Dictionary<GameObject, float>();
     public StickController stickController;
     private Vector2 stickPosition;
+    private Gyroscope gyro;
 
 
     void Start()
     {
+        Debug.Log(gm.gyroscope);
         GrowSnake();
         GrowSnake();
         GrowSnake();
@@ -32,7 +34,9 @@ public class SnakeController : MonoBehaviour
         GrowSnake();
         GrowSnake();
         GrowSnake();
-
+        
+        gyro = Input.gyro;
+        gyro.enabled = true;
         //positionHistory.Insert(0, transform.position);
         InvokeRepeating("UpdatePositionHistory", 0f, 0.01f);
 
@@ -46,15 +50,24 @@ public class SnakeController : MonoBehaviour
 
     void Update()
     {
+
         if (gm.play)
         {
             //move forward
             transform.position += transform.forward * moveSpeed * Time.deltaTime;
 
             //steer
-            float steerDirection = stickPosition.x; // Use the x position of the joystick
-            transform.Rotate(Vector3.up * steerDirection * steerSpeed * Time.deltaTime);
-
+            if (gm.gyroscope)
+            {
+                float steerDirection = -gyro.rotationRateUnbiased.z; // Use z-axis rotation for steering
+                transform.Rotate(Vector3.up * steerDirection * steerSpeed * Time.deltaTime);
+            }
+            else
+            {
+                // Use the joystick to steer the snake
+                float steerDirection = stickPosition.x;
+                transform.Rotate(Vector3.up * steerDirection * steerSpeed * Time.deltaTime);
+            }
             int index = 0;
             foreach (GameObject body in bodyParts)
             {
@@ -153,4 +166,5 @@ public class SnakeController : MonoBehaviour
             Debug.Log("Snake trigger! Game over.");
         }
     }
+    
 }

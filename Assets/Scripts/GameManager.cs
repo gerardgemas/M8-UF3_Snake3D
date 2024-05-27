@@ -21,7 +21,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Canvas gameOverMenu;
     [SerializeField] private TextMeshProUGUI scoreLost;
     [SerializeField] private GameObject stickControllerPrefab;
-
+    public bool gyroscope;
+    [SerializeField] private Toggle gyroscopeToggle;
     private StickController stickControllerInstance;
     // PlayerPrefs key for storing and retrieving the high score
     private string highScoreKey = "HighScore";
@@ -36,7 +37,8 @@ public class GameManager : MonoBehaviour
         highScoreText.SetText("High Score: " + savedHighScore);
         UpdateScore(0);
         stickControllerInstance = Instantiate(stickControllerPrefab).GetComponent<StickController>();
-
+        
+        
     }
 
     // Update is called once per frame
@@ -59,6 +61,16 @@ public class GameManager : MonoBehaviour
             gameOverMenu.gameObject.SetActive(true);
             scoreLost.SetText("Your Socre: " + score);
             stickControllerPrefab.gameObject.SetActive(false);    
+        }
+        if (gyroscopeToggle.isOn)
+        {
+            gyroscope = true;
+            stickControllerPrefab.SetActive(false);
+        }
+        else if (!gyroscopeToggle.isOn)
+
+        {
+            gyroscope = false;
         }
     }
 
